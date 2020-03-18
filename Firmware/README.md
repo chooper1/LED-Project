@@ -1,5 +1,9 @@
 # Firmware
-This repository contains the firmware for the microcontroller.
+This repository contains the firmware for the microcontroller. 
+
+Code:
+led_test_with_one_strip.ino - code for testing a single LED strip
+led_test_with_functions.ino - code for testing two LED strips contected via daisy chain
 
 Note that in order to run the firmware you need to install the Neopixel library.
 Steps:
