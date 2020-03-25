@@ -28,6 +28,7 @@ void setup() {
   pixels.begin();
   pixels.clear();
   // sd card and wifi connection will also need to be set up here!
+  // sd card library: https://www.arduino.cc/en/reference/SD
 }
 
 /*
