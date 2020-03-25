@@ -10,23 +10,11 @@
 */
 
 #define DELAYVAL 500
-#define NUMBER_PER_STRIP 8 /* setting this to 1 allows us to test multiple locations even with only 1 strip
+#define NUMBER_PER_STRIP 1 /* setting this to 1 allows us to test multiple locations even with only 1 strip */
 #define NUMPIXELS 16 /* number of strips times number per strip */
 #define PIN 6
 
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
-int part;
-int not_part;
-int colors[8][3] = {
-    {0, 0, 150},
-    {0, 150, 0},
-    {150, 0, 0},
-    {0, 150, 150},
-    {150, 0, 150},
-    {150, 150, 0},
-    {150, 75, 0},
-    {0, 150, 75}
-};
 
 int[3] color = {0, 0, 0};
 
@@ -39,33 +27,25 @@ void setup() {
 #endif
   pixels.begin();
   pixels.clear();
-  part = 0;
-  not_part = 1;
 }
 
 /*
-   loop repeats forever, and loops through two strips of leds in an alternating pattern
+   loop repeats forever, and loops through all the LEDs
 */
 void loop() {
-  for (int i = 0; i < NUMBER_PER_STRIP; i++) {
-    if (part == 0) {
-      part = 1;
-      not_part = 0;
-    } else {
-      part = 0;
-      not_part = 1;
-    }
+  for (int i = 0; i < NUMPIXELS; i++) {
     pixels.clear();
-    led_on(i, part);
+    led_on(i);
     delay(DELAYVAL);
   }
-  if (part == 0) {
-    part = 1;
-    not_part = 0;
-  } else {
-    part = 0;
-    not_part = 1;
-  }
+}
+
+/*
+ * Support function for getting the LED index using the location
+ */
+translateLocationToID(int location) 
+{
+    int led_index = ;# access from the product table on the sd card using location
 }
 
 /*
@@ -76,9 +56,9 @@ void loop() {
  */
 getRFIDColor(int RFID) 
 {
-    int red_val = ;# access from the table on the sd card using RFID
-    int green_val = ;# access from the table on the sd card using RFID
-    int blue_val = ;# access from the table on the sd card using RFID
+    int red_val = ;# access from the colors table on the sd card using RFID
+    int green_val = ;# access from the colors table on the sd card using RFID
+    int blue_val = ;# access from the colors table on the sd card using RFID
     color[0] = red_val;
     color[1] = green_val;
     color[2] = blue_val;
