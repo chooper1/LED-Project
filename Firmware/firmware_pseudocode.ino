@@ -27,17 +27,22 @@ void setup() {
 #endif
   pixels.begin();
   pixels.clear();
+  // sd card and wifi connection will also need to be set up here!
 }
 
 /*
    loop repeats forever, and loops through all the LEDs
 */
 void loop() {
-  for (int i = 0; i < NUMPIXELS; i++) {
-    pixels.clear();
-    led_on(i);
-    delay(DELAYVAL);
+  /* firmware should block here waiting for input over wifi
+  location, turn_on, RFID = input_over_wifi;
+  if(turn_on) {
+      led_on_rfid(RFID, location);
+  } else {
+      led_off_rfid(RFID, location);
   }
+  */
+  delay(DELAYVAL);
 }
 
 /*
@@ -45,7 +50,8 @@ void loop() {
  */
 translateLocationToID(int location) 
 {
-    int led_index = ;# access from the product table on the sd card using location
+  int led_index = ; // access from the product table on the sd card using location
+  return led_index;
 }
 
 /*
@@ -56,20 +62,20 @@ translateLocationToID(int location)
  */
 getRFIDColor(int RFID) 
 {
-    int red_val = ;# access from the colors table on the sd card using RFID
-    int green_val = ;# access from the colors table on the sd card using RFID
-    int blue_val = ;# access from the colors table on the sd card using RFID
-    color[0] = red_val;
-    color[1] = green_val;
-    color[2] = blue_val;
+  int red_val = ; // access from the colors table on the sd card using RFID
+  int green_val = ; // access from the colors table on the sd card using RFID
+  int blue_val = ; // access from the colors table on the sd card using RFID
+  color[0] = red_val;
+  color[1] = green_val;
+  color[2] = blue_val;
 }
 
 /*
- * support functions for turning LEDs on and off based and item number (no picker ID)
+ * functions for turning LEDs on and off based and item number (no picker ID)
  */
 void led_on(int location)
 {
-  # ITEM_ID = translateLocationToID(location) 
+  int ITEM_ID = translateLocationToID(location);
   int led_number = NUMBER_PER_STRIP * ITEM_ID;
   pixels.setPixelColor(led_number, pixels.Color(150, 0, 0));
   pixels.show();
@@ -81,7 +87,7 @@ void led_on(int location)
  */
 void led_off(int location)
 {
-  # ITEM_ID = translateLocationToID(location)
+  int ITEM_ID = translateLocationToID(location);
   int led_number = NUMBER_PER_STRIP * ITEM_ID;
   pixels.setPixelColor(led_number, pixels.Color(0, 0, 0));
   pixels.show();
@@ -89,11 +95,11 @@ void led_off(int location)
 }
 
 /*
- * support functions for turning LEDs on and off based on RFID and item number
+ * functions for turning LEDs on and off based on RFID and item number
  */
 void led_on_rfid(int RFID, int location)
 {
-  # ITEM_ID = translateLocationToID(location) 
+  int ITEM_ID = translateLocationToID(location); 
   int led_number = NUMBER_PER_STRIP * ITEM_ID;
   getRFIDColor(RFID); 
   pixels.setPixelColor(led_number, pixels.Color(color[RFID], color[RFID], color[RFID]));
@@ -106,7 +112,7 @@ void led_on_rfid(int RFID, int location)
  */
 void led_off_rfid(int RFID, int location)
 {
-  # ITEM_ID = translateLocationToID(location)
+  int ITEM_ID = translateLocationToID(location);
   int led_number = NUMBER_PER_STRIP * ITEM_ID;
   pixels.setPixelColor(led_number, pixels.Color(0, 0, 0));
   pixels.show();
