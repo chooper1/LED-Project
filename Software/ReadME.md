@@ -7,3 +7,5 @@ Pseudocode:
 3) sendPartLocation_pseudocode.py - sends the location of the part that was just scanned to the microcontroller
 4) getArduinoID_pseudocode.py - gets the arduino ID corresponding to a given location in the warehouse
 
+code: 
+1) main.py - the main script running continuously 
