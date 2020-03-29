@@ -175,7 +175,7 @@ int storLoc_to_LED(int storLoc)
     }
 
     //if a String matches the desired storage location, get the LED index
-    if (entry.indexOf((String) storLoc) != -1)
+    if (entry.substring(0, entry.indexOf('\t')) == (String) storLoc)
     {
       ledIndex = entry.substring(entry.indexOf('\t') + 1,entry.indexOf('\n')).toInt(); //LED index is btwn tab and newline
       break; //no need to go through the rest of the file
@@ -204,7 +204,7 @@ int pickerID_to_RGB(int pickerID)
     }
 
     //if a String matches the pickerID, get color index
-    if (entry.indexOf((String) pickerID) != -1)
+    if (entry.substring(0, entry.indexOf('\t')) == (String) pickerID)
     {
       colorIndex = entry.substring(entry.indexOf('\t') + 1,entry.indexOf('\n')).toInt(); //color index is btwn tab and newline
       break; //no need to go through the rest of the file
