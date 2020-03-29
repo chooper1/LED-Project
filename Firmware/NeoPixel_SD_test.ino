@@ -97,6 +97,7 @@ void loop()
     pixels.clear();
     led_on(LEDIndex, colorIndex);
   }
+  //turn off all LEDs  if storage location or picker ID is invalid
   else
   {
     pixels.fill();
