@@ -22,10 +22,10 @@ int colors[8][3] = {
     {0, maxBright, 0},  //green
     {maxBright, 0, 0},  //red
     {0, 0, maxBright},  //blue
-    {maxBright, maxBright, 0},  //yellow
+    {4*maxBright/5, 3*maxBright/5, 0},  //yellow
     {0, maxBright, maxBright},  //turquoise
     {maxBright, 0, maxBright},  //magenta
-    {maxBright, 3*maxBright/5, 0}, //orange
+    {maxBright, 1*maxBright/5, 0}, //orange
     {maxBright, maxBright, maxBright} //white
 };
 
