@@ -12,6 +12,7 @@ client_socket = socket(AF_INET, SOCK_DGRAM) #set up the socket
 client_socket.settimeout(1) #only wait one second for a response
 
 while(1): # Main Loop
+    print("input [storage location,pickerID]:")
     string_address = input() # ask for user input
     data = string_address.encode('utf-8') # encode input as a byte for datagram protocol
     client_socket.sendto(data,address) #send command to arduino
