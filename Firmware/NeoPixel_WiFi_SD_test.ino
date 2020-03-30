@@ -15,7 +15,7 @@
    then initializing the neopixels connected to that pin
 */
 
-#define DELAYVAL 1000
+#define DELAYVAL 10
 #define LED_COUNT 8
 #define PIN 6
 
