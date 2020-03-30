@@ -93,6 +93,7 @@ void setup()
   #endif
     pixels.begin();
     pixels.clear();
+    pixels.show();
 }
 
 /*
@@ -107,10 +108,12 @@ void loop()
     Udp.read(packetBuffer,UDP_TX_PACKET_MAX_SIZE); // read the data request on the Udp
     String data(packetBuffer); //convert packet buffer array to string dataReq
     Serial.println(data);
-    String storLoc = data.substring(0,data.indexOf(','));
-    String pickerID = data.substring(data.indexOf(',') + 1);
+    int comma1 = data.indexOf(',');
+    String storLoc = data.substring(0,comma1); //storLoc is first value in comma-separated string
+    String pickerID = data.substring(comma1 + 1, data.lastIndexOf(',')); //picker ID is the middle value
+    bool on = (data.indexOf("on") > 0); //on is true if string contains "on"
     Udp.beginPacket(Udp.remoteIP(),Udp.remotePort()); //Initialize packet Where we are sending it. Probably don't need this for my code
-    Udp.print("Storage location: " + storLoc + '\n' + "Picker ID:" + pickerID + '\n'); //Send string back to client
+    Udp.print("Storage location: " + storLoc + '\n' + "Picker ID: " + pickerID + '\n' + "ON: " + on); //Send string back to client
     Udp.endPacket(); // Packet has been sent 
 
     memset(packetBuffer,0,UDP_TX_PACKET_MAX_SIZE);
@@ -122,13 +125,10 @@ void loop()
     //update NeoPixel if storage location and picker ID are valid
     if ((LEDIndex != -1) && (colorIndex != -1))
     {
-      pixels.clear();
-      led_on(LEDIndex, colorIndex);
-    }
-    else
-    {
-      pixels.fill();
-      pixels.show();
+      if (on)
+        led_on(LEDIndex, colorIndex); //turn LED at index on with certain color
+      else
+        led_off(LEDIndex); //turn LED at index off
     }
   }
   delay(DELAYVAL);
@@ -147,12 +147,11 @@ void led_on(int LED_IND, int PICKER_COLOR)
 /*
  * the led_off function allows a specific led to be turned off without clearing all the other leds
  */
-void led_off(int PICKER_ID)
+void led_off(int LED_ID)
 {
-  int led_number = PICKER_ID;
+  int led_number = LED_ID;
   pixels.setPixelColor(led_number, pixels.Color(0, 0, 0));
   pixels.show();
-  delay(5);
 }
 
 /*
