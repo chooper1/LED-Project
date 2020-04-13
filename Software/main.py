@@ -9,7 +9,6 @@ from sendPartLocation import sendPartLocation
 from socket import *
 import time
 
-
 def main():
 	prevTransaction = [] 
     	while(1):
@@ -45,6 +44,6 @@ def main():
 				client_socket.close()
 			
 			prevTransaction = newTransactions[len(newTransactions)-1]
-
+		# maybe put some type of short time delay here (to wait between queries no new transactions were found)
 if __name__== "__main__":
 	main()
