@@ -31,7 +31,7 @@ def main():
 				#sendPartLocationAndRFID(location, RFID, IP)
 
 				#input format: [storage location,pickerID,on/off]
-				string_address = input() # ask for user input
+				string_address = location + ',' + RFID + + ',' + ON 
 				data = string_address.encode('utf-8') # encode input as a byte for datagram protocol
 
 				client_socket.sendto(data,address) #send command to arduino
