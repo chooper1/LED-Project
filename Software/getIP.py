@@ -5,9 +5,9 @@ def getIP(location):
     
     conn = sqlite3.connect('IPAddresses.db')
     cursor = conn.cursor()
-    table_name = 'IPAddresses'
-    id_column = 'my_1st_column' #primary key
-    column_2 = 'my_2nd_column' #ip address
+    table_name = 'controller'
+    id_column = 'a' #primary key
+    column_2 = 'b' #ip address
     
     # https://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html#querying-the-database---selecting-rows
     c.execute("SELECT * FROM {tn} WHERE {idf}={my_id}".\
