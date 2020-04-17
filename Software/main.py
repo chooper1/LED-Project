@@ -4,6 +4,8 @@
 from getArduinoID import getArduinoID 
 from sendPartLocation import sendPartLocation
 
+import sqlite3 
+
 # coding: utf-8
 # In[ ]:
 from socket import *
