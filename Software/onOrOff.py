@@ -6,9 +6,9 @@ def onOrOff(location, RFID, pickORput):
 	check_table_location = crsr.execute("SELECT EXISTS(SELECT * from table_on WHERE table_on.Location = %s)", (location))
 
 	# for picking, light can be turned on when the location appears in the WMS and turned off when it appears again
-	if pickORput = pick:
+	if pickORput == pick:
 	# save location into the database if it is not there and turn on the LED at that location
-		if check_table_location = 0:
+		if check_table_location == 0:
 			# insert the location into the table 
 			crsr.execute("INSERT INTO table_on VALUES (%s, %s)", (location, RFID))
 			# return the location and 1 to indicate that the location needs to be turned on
@@ -24,7 +24,7 @@ def onOrOff(location, RFID, pickORput):
 	# location must not be turned off if the location is a result of scanning the shelf 
 	else:
 		# if the location is not already in the table
-		if check_table_location = 0:
+		if check_table_location == 0:
 			# insert the new location that needs to be turn on into the table 
 			crsr.execute("INSERT INTO table_on VALUES (%s, %s)", (location, RFID))
 
