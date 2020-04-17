@@ -25,9 +25,19 @@ def main():
 				#address = ('192.168.5.27', 5000) # Define who you are talking to
 				client_socket = socket(AF_INET, SOCK_DGRAM) #set up the socket
 				client_socket.settimeout(1) #only wait one second for a response
+				
+				# connecting to the database for onORoff function
+				connection = sqlite3.connect("table_on.db") 
+				# cursor  
+				crsr = connection.cursor() 
 
 				ON = onOrOff(location, RFID, pickOrPut)
-
+				
+				# To save the changes in the files
+				connection.commit() 
+				# close the connection with the databse for onORoff function
+				connection.close()
+				
 				#sendPartLocationAndRFID(location, RFID, IP)
 
 				#input format: [storage location,pickerID,on/off]
