@@ -12,12 +12,14 @@ from socket import *
 import time
 
 def main():
-	prevTransaction = [] 
+	prevTransactionNumber = 0
     	while(1):
 		#findNewTransaction() needs to be updated to return multiple transactions, and needs to be able to take in either
 		#the previously processed transaction or no transactions
 		#pickOrPut, location, RFID = findNewTransaction()
-		newTransactions = findNewTransaction(prevTransaction)
+		
+		# this function call will need to be modified if we gain access to the WMS
+		newTransactions = findNewTransaction(prevTransactionNumber)
 		
 		if(len(newTransactions) > 0):
 			for i in range(0,len(newTransactions)):
@@ -55,7 +57,11 @@ def main():
 					pass
 				client_socket.close()
 			
-			prevTransaction = newTransactions[len(newTransactions)-1]
+			# prevTransaction = newTransactions[len(newTransactions)-1]
+			prevTransactionNumber = prevTransactionNumber + 1
+		else: 
+			prevTransactionNumber = 0
 		# maybe put some type of short time delay here (to wait between queries if no new transactions were found)
+		sleep(2) # for testing
 if __name__== "__main__":
 	main()
