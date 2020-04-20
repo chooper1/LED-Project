@@ -58,10 +58,9 @@ def main():
 				client_socket.close()
 			
 			# prevTransaction = newTransactions[len(newTransactions)-1]
-			prevTransactionNumber = prevTransactionNumber + 1
-		else: 
-			prevTransactionNumber = 0
-		# maybe put some type of short time delay here (to wait between queries if no new transactions were found)
+		prevTransactionNumber = prevTransactionNumber + 1
 		sleep(2) # for testing
+		
+		
 if __name__== "__main__":
 	main()
