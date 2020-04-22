@@ -47,20 +47,25 @@ const char* password = "F62733E70793EBA609F20D5";  // your network password
 void setup() 
 {
   delay(2000);
-
+  
   //WiFi and UDP setup
-  Serial.print("connecting to ");
-  Serial.println(ssid);
-  //WiFi.config(ip); // Setting static IP address for the WiFi connection to board
-  bool wifiSuccess = WiFi.begin(ssid, password); // initialize wifi
-  if (wifiSuccess)
+
+  boolean wifiSuccess = false;
+  IPAddress ip_NULL(0,0,0,0);
+  while(!wifiSuccess)
   {
-    Serial.println("connected");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
-  }
-  else
+    Serial.print("connecting to ");
+    Serial.println(ssid);
+    //WiFi.config(ip); // Setting static IP address for the WiFi connection to board
+    wifiSuccess = WiFi.begin(ssid, password); // initialize wifi
+    if (wifiSuccess && WiFi.localIP() != ip_NULL)
+       break;
     Serial.println("failed to connect");
+  }
+  Serial.println("connected");
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+  
   bool UDPsuccess = Udp.begin(localPort); //initialize Udp
   if (UDPsuccess)
     Serial.println("UDP initialized");
@@ -127,10 +132,13 @@ void loop()
     int colorIndex = pickerID_to_RGB(pickerID.toInt(), on);
   
     //update NeoPixel if storage location and picker ID are valid
-    if ((LEDIndex != -1) && (colorIndex != -1))
+    if (LEDIndex != -1)
     {
       if (on)
-        led_on(LEDIndex, colorIndex); //turn LED at index on with certain color
+      {
+        if (colorIndex != -1)
+          led_on(LEDIndex, colorIndex); //turn LED at index on with certain color
+      }
       else
         led_off(LEDIndex); //turn LED at index off
     }
@@ -211,10 +219,10 @@ int storLoc_to_LED(int storLoc)
 int pickerID_to_RGB(int pickerID, bool on)
 {
   int colorIndex = -1; //if pickerID does not match an entry, function returns -1
-  int recNum = 0;
-  
-  File pickID2RGB = SD.open("pick.txt"); //open file containing database
+  int recNum = 0; //counter for how many records are present
 
+  //update record counter
+  File pickID2RGB = SD.open("pick.txt"); //open file containing database
   while(pickID2RGB.available())
   {
     char nextChar = '\0';
@@ -222,9 +230,10 @@ int pickerID_to_RGB(int pickerID, bool on)
       nextChar = pickID2RGB.read(); //find next character
     recNum++;
   }
-  Serial.println(recNum);
   pickID2RGB.close();
 
+  //if recNum is nonzero, check to see if new pickerID is already present
+  //if present, light up LED with specified color
   if (recNum > 0)
   {
     pickID2RGB = SD.open("pick.txt");
@@ -233,7 +242,7 @@ int pickerID_to_RGB(int pickerID, bool on)
     while(pickID2RGB.available())
     {
       char nextChar = '\0';
-      while(nextChar != '\n') //end String for one entry at a newline
+      while(nextChar != '\n' && nextChar != 255) //end String for one entry at a newline
       {
         entry += (String) nextChar; //add next character to existing String
         nextChar = pickID2RGB.read(); //find next character
@@ -251,8 +260,10 @@ int pickerID_to_RGB(int pickerID, bool on)
     pickID2RGB.close();
   }
 
-  if (colorIndex == -1)
+  //if either file is empty or new pickerID is not present in the database, assign new picker new color
+  if (colorIndex == -1 && on)
   {
+    //if the database is not at capacity, append new entry to the database
     if (recNum < 8)
     {
       pickID2RGB = SD.open("pick.txt");
@@ -261,7 +272,7 @@ int pickerID_to_RGB(int pickerID, bool on)
       {
         String entry;
         char nextChar = '\0';
-        while(nextChar != '\n') //end String for one entry at a newline
+        while(nextChar != '\n' && nextChar != 255) //end String for one entry at a newline
         {
           entry += (String) nextChar; //add next character to existing String
           nextChar = pickID2RGB.read(); //find next character
@@ -270,20 +281,21 @@ int pickerID_to_RGB(int pickerID, bool on)
         updateString += entry;
       }
       pickID2RGB.close();
-      updateString += (String) pickerID + '\t' + (String) (recNum) + '\n';
-      Serial.println(updateString);
+      updateString += (String) pickerID + '\t' + (String) (recNum) + '\n';  //assign picker a color index one above the number of entries
+      colorIndex = recNum; //set LED output color to assigned color
       updateSD("pick.txt", updateString);
-      colorIndex = recNum;
     }
-    else
+    //if database is too full for new entry, cycle out least recent entry
+    else if (recNum >= 8)
     {
       pickID2RGB = SD.open("pick.txt");
       String wholeString;
       String entry;
+      //get whole database
       while(pickID2RGB.available())
       {
         char nextChar = '\0';
-        while(nextChar != '\n') //end String for one entry at a newline
+        while(nextChar != '\n' && nextChar != 255) //end String for one entry at a newline
         {
           entry += (String) nextChar; //add next character to existing String
           nextChar = pickID2RGB.read(); //find next character
@@ -292,18 +304,13 @@ int pickerID_to_RGB(int pickerID, bool on)
         wholeString += entry;
         entry = "";
       }
-      Serial.println("start string");
-      Serial.print(wholeString);
       pickID2RGB.close();
-      int lastTab = wholeString.lastIndexOf('\t')+1;
-      int prevIndex = wholeString.substring(lastTab, wholeString.indexOf('\n',lastTab)).toInt();
-      Serial.println(prevIndex);
-      int newIndex = (prevIndex + 1) % 8;
-      String updateString = wholeString.substring(wholeString.indexOf('\n')+1) + (String) pickerID + '\t' + (String) newIndex;
-      updateSD("pick.txt", updateString);
-      Serial.println(updateString);
-      colorIndex = newIndex;
-      recNum = 8;
+      
+      int lastTab = wholeString.lastIndexOf('\t') + 1;  //index of last tab
+      int prevIndex = wholeString.substring(lastTab, wholeString.indexOf('\n',lastTab)).toInt();  //last color index in database
+      colorIndex = (prevIndex + 1) % 8; //assign picker to the next color index, returning to index 0 after index 7
+      String updateString = wholeString.substring(wholeString.indexOf('\n')+1) + (String) pickerID + '\t' + (String) colorIndex;
+      updateSD("pick.txt", updateString); //send new string to SD card
     }
   }
   return colorIndex;
