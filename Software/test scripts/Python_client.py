@@ -6,7 +6,7 @@
 from socket import *
 import time
 
-address = ('192.168.5.27', 5000) # Define who you are talking to
+address = ('192.168.2.210', 5000) # Define who you are talking to
 client_socket = socket(AF_INET, SOCK_DGRAM) #set up the socket
 client_socket.settimeout(1) #only wait one second for a response
 

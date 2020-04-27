@@ -1,25 +1,27 @@
-# function to detect when a new transaction occurs that outputs the transaction's information 
+# function to detect when a new transaction occurs that outputs the transaction's information
 
 def findNewTransaction(prevTransactionNumber):
-	import sqlite3
-	import numpy 
-	
-	conn = sqlite3.connect('wms.db')
-	cursor = conn.cursor()
-	table_name = 'transaction'
-	id_column = 'test' #not primary key, since two transactions could happen in same time step
-	column_2 = 'pickOrPut' 
-	column_3 = 'location'
-	column_4 = 'RFID' 
-    	# https://sebastianraschka.com/Articles/2014_sqlite_in_python_tutorial.html#querying-the-database---selecting-rows
-    	c.execute("SELECT {coi1},{coi2},{coi3} FROM {tn} WHERE {idf}={my_id}".\
-      	      format(tn=table_name, coi1=column_2, coi2=column3, coi3=column4; idf=id_column, my_id=prevTransactionNumber))
-	
-	rows = c.fetchall()
-	if (rows):
-		newTransactions = numpy.array(rows) 
-	else: 
-		newTransactions = []
-	conn.close()
-    
-	return newTransactions # should be [] if no new transactions
+    import sqlite3
+    import numpy
+
+    conn = sqlite3.connect('wms.db')
+    c = conn.cursor()
+    #define table name and columns
+    table_name = 'transact'
+    id_column = 'test' #not primary key, since two transactions could happen in same time step
+    column_2 = 'pickOrPut'
+    column_3 = 'location'
+    column_4 = 'RFID'
+
+    #query the transact table
+    c.execute("SELECT {coi2},{coi3},{coi4} FROM {tn} WHERE {coi1}={my_id}".format(coi2=column_2, coi3=column_3, coi4=column_4, tn=table_name, coi1=id_column, my_id=prevTransactionNumber))
+    #get all rows that need to be currently processed
+    rows = c.fetchall()
+    if (rows):
+        #format of each element of newTransactions is [pickOrPut, location, RFID]
+        newTransactions = numpy.array(rows)
+    else:
+        #return [] if no new transactions
+        newTransactions = []
+    conn.close()
+    return newTransactions # should be [] if no new transactions
