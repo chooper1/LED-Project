@@ -132,8 +132,8 @@ void loop()
 
     //convert inputs to integers
     String indexData = storLoc_to_LED(storLoc.toInt());
-    int LEDIndex = indexData.substring(0, indexData.indexOf('\t')).toInt();
-    int outPin = indexData.substring(indexData.indexOf('\t')+1, indexData.indexof('\n')).toInt();
+    int outPin = indexData.substring(0, indexData.indexOf('\t')).toInt();
+    int LEDindex = indexData.substring(indexData.indexOf('\t')+1, indexData.indexof('\n')).toInt();
     int colorIndex = pickerID_to_RGB(pickerID.toInt(), on_str.toInt());
   
     //update NeoPixel if index data and picker ID are valid
