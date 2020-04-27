@@ -17,11 +17,9 @@
 
 #define DELAYVAL 10
 #define LED_COUNT 8
-#define PIN 6
 
 const int maxBright = 20;
 
-Adafruit_NeoPixel pixels(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
 int colors[8][3] = {
     {0, maxBright, 0},  //green
     {maxBright, 0, 0},  //red
@@ -88,8 +86,12 @@ void setup()
   if (SD.exists("pick.txt"))
     SD.remove("pick.txt");
 
+  /*
+
   int storLocs[] = {5,36,59,72,305,613,2547,8321}; //random storage locations
   int pickerIDs[] = {2,5,7,11,13,17,22,24}; //random picker IDs
+
+  */
 
   //update SD card and provide array lengths to functions
   updateSD("led.txt", updateString(storLocs, sizeof(storLocs)/sizeof(storLocs[0])));
@@ -129,20 +131,22 @@ void loop()
     memset(packetBuffer,0,UDP_TX_PACKET_MAX_SIZE);
 
     //convert inputs to integers
-    int LEDIndex = storLoc_to_LED(storLoc.toInt()); 
+    String indexData = storLoc_to_LED(storLoc.toInt());
+    int LEDIndex = indexData.substring(0, indexData.indexOf('\t')).toInt();
+    int outPin = indexData.substring(indexData.indexOf('\t')+1, indexData.indexof('\n')).toInt();
     int colorIndex = pickerID_to_RGB(pickerID.toInt(), on_str.toInt());
   
-    //update NeoPixel if storage location and picker ID are valid
-    if (LEDIndex != -1)
+    //update NeoPixel if index data and picker ID are valid
+    if (indexData != "")
     {
       if (on_str.toInt())
       {
         if (colorIndex != -1) {
-          led_on(LEDIndex, colorIndex); //turn LED at index on with certain color
+          led_on(LEDIndex, colorIndex, outPin); //turn LED at index on with certain color
         }
       }
       else {
-        led_off(LEDIndex); //turn LED at index off
+        led_off(LEDIndex, outPin); //turn LED at index off
       }
     }
   }
@@ -152,8 +156,9 @@ void loop()
 /*
  * support functions for turning LEDs on and off based on picker ID
  */
-void led_on(int LED_IND, int PICKER_COLOR)
+void led_on(int LED_IND, int PICKER_COLOR, int PIN)
 {
+  Adafruit_NeoPixel pixels(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
   pixels.setPixelColor(LED_IND, pixels.Color(colors[PICKER_COLOR][0],
                        colors[PICKER_COLOR][1], colors[PICKER_COLOR][2]));
   pixels.show();
@@ -162,8 +167,9 @@ void led_on(int LED_IND, int PICKER_COLOR)
 /*
  * the led_off function allows a specific led to be turned off without clearing all the other leds
  */
-void led_off(int LED_ID)
+void led_off(int LED_ID, int PIN)
 {
+  Adafruit_NeoPixel pixels(LED_COUNT, PIN, NEO_GRB + NEO_KHZ800);
   int led_number = LED_ID;
   pixels.setPixelColor(led_number, pixels.Color(0, 0, 0));
   pixels.show();
@@ -190,11 +196,11 @@ void updateSD(String file, String newData)
 }
 
 //take storage location input and transfer to corresponding LED
-int storLoc_to_LED(int storLoc)
+String storLoc_to_LED(int storLoc)
 {
   File strLoc2LED = SD.open("led.txt"); //open file containing database
 
-  int ledIndex = -1; //if storLoc does not match an entry, function returns -1
+  String ledIndex = ""; //if storLoc does not match an entry, function returns an empty string
   String entry;
 
   while(strLoc2LED.available())
@@ -206,10 +212,10 @@ int storLoc_to_LED(int storLoc)
       nextChar = strLoc2LED.read(); //find next character
     }
 
-    //if a String matches the desired storage location, get the LED index
+    //if a String matches the desired storage location, get the output pin and LED index
     if (entry.substring(0, entry.indexOf('\t')) == (String) storLoc)
     {
-      ledIndex = entry.substring(entry.indexOf('\t') + 1,entry.indexOf('\n')).toInt(); //LED index is btwn tab and newline
+      ledIndex = entry.substring(entry.indexOf('\t') + 1,entry.indexOf('\n')); //output pin and LED index are btwn tab and newline
       break; //no need to go through the rest of the file
     }
     entry = "";
@@ -219,7 +225,7 @@ int storLoc_to_LED(int storLoc)
 }
 
 //take picker ID and convert to colors as defined in NeoPixel object
-int pickerID_to_RGB(int pickerID,int on)
+int pickerID_to_RGB(int pickerID, int on)
 {
   int colorIndex = -1; //if pickerID does not match an entry, function returns -1
   int recNum = 0; //counter for how many records are present
