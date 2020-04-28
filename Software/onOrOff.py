@@ -9,6 +9,7 @@ def onOrOff(location, RFID, pickORput):
     id_column = 'location' #not primary key, since two transactions could happen in same time step
     column_2 = 'RFID'
     pick = 0
+    put = 1
 
     # check to see if location already exists in the table that has all the LED locations that are currently on
     check_table_location = c.execute("SELECT * FROM {tn} WHERE {coi1}={my_id} LIMIT 1".format(tn=table_name, coi1=id_column, my_id=location))
@@ -39,7 +40,7 @@ def onOrOff(location, RFID, pickORput):
 
     # for putaway, light can turned on when the location appears in the WMS and turned off when the next location appears
     # location must not be turned off if the location is a result of scanning the shelf
-    else:
+    elif pickORput == put:
         # if the location is not already in the table
         if check == None:
             # insert the new location that needs to be turn on into the table
@@ -57,8 +58,11 @@ def onOrOff(location, RFID, pickORput):
             else:
                 # return the new location and 1 to indicate that the location needs to be turned on, and the old location with 0 to be turned off
                 return location, 1, location2[0], 0 #location2 returns a tuple, so we need to return only the first value
-
         else:
             conn.close()
             # if the location is already in the table, this means that the scan was a shelf scan so nothing should happen
+            return -1,-1
+    #if the scan was not for picking or putaway
+    else:
+            conn.close()
             return -1,-1
