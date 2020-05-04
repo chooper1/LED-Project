@@ -36,7 +36,6 @@ int colors[8][3] = {
 
 Adafruit_NeoPixel pixels6(LED_COUNT, PIN6, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel pixels7(LED_COUNT, PIN7, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel pixels8(LED_COUNT, PIN8, NEO_GRB + NEO_KHZ800);
 
 //WiFi constants
 IPAddress ip(192, 168, 2, 210);// assign IP address to arduino of 192,168,1,88
@@ -111,9 +110,6 @@ void setup()
   pixels7.begin();
   pixels7.clear();
   pixels7.show();
-  pixels8.begin();
-  pixels8.clear();
-  pixels8.show();
 }
 
 /*
@@ -173,10 +169,6 @@ void led_on(int LED_IND, int PICKER_COLOR, int PIN)
     pixels7.setPixelColor(LED_IND, pixels7.Color(colors[PICKER_COLOR][0],
                        colors[PICKER_COLOR][1], colors[PICKER_COLOR][2]));
     pixels7.show();
-  } else if (PIN == 8) {
-    pixels8.setPixelColor(LED_IND, pixels8.Color(colors[PICKER_COLOR][0],
-                       colors[PICKER_COLOR][1], colors[PICKER_COLOR][2]));
-    pixels8.show();
   }
 }
 
@@ -192,9 +184,6 @@ void led_off(int LED_ID, int PIN)
   } else if (PIN == 7) {
     pixels7.setPixelColor(led_number, pixels7.Color(0, 0, 0));
     pixels7.show();
-  } else if (PIN == 8) {
-    pixels8.setPixelColor(led_number, pixels8.Color(0, 0, 0));
-    pixels8.show();
   }
 }
 
@@ -228,7 +217,7 @@ String storLoc_to_LED(int storLoc)
   while(strLoc2LED.available())
   {
     char nextChar = '\0';
-    while(nextChar != '\n') //end String for one entry at a newline
+    while(nextChar != '\n' && nextChar != 255) //end String for one entry at a newline
     {
       entry += (String) nextChar; //add next character to existing String
       nextChar = strLoc2LED.read(); //find next character
